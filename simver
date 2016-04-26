@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [[ "x$SIMULATED_VERSION" == "x" ]]; then
+    echo $1
+else
+    echo $SIMULATED_VERSION
+fi

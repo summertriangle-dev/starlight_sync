@@ -1,0 +1,10 @@
+#!/bin/bash
+
+SCRIPT_PATH=`dirname "$0"`; SCRIPT_PATH=`eval "cd \"$SCRIPT_PATH\" && pwd"`
+HCA_DECODER="$SCRIPT_PATH/hca_decoder"
+LAME="$SCRIPT_PATH/lame"
+
+cd "$1"
+for f in *.hca; do
+    ( $HCA_DECODER -o /dev/stdout $f | $LAME -V2 - "${f%.hca}".mp3 ) && rm $f
+done

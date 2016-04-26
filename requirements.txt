@@ -1,0 +1,5 @@
+lz4==0.7.0
+msgpack-python==0.4.7
+plac==0.9.1
+requests==2.9.1
+tornado==4.3

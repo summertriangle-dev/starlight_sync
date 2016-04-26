@@ -1,0 +1,51 @@
+#!/bin/bash
+cd "$(echo $0 | sed -E s/[^/]+$//g)"
+
+eval WORKING_DIR=\$$TRANSIENT_DIR_POINTER
+export WORKING_DIR
+
+if [ ! -f "$WORKING_DIR/last_run" ]; then
+    echo "VERSION=0" > "$WORKING_DIR/last_run"
+fi
+source "$WORKING_DIR/last_run"
+
+function kc_postupdate_tasks() {
+    for d in "$WORKING_DIR/iconcache" "$WORKING_DIR/iconsheetcache" "$WORKING_DIR/root/icons2"; do
+        mkdir -p $d
+    done
+
+    ./iconsheet_new.py "$WORKING_DIR/iconcache" "$WORKING_DIR/iconsheetcache" "$WORKING_DIR/root/icons2"
+
+    rsync -e "ssh -oStrictHostKeyChecking=no -i $SSH_PRIVATE_KEY" -arvz rsync "$WORKING_DIR/root/" $SYNCREMOTE
+}
+
+function kc_update() {
+    local UPGRADE_VERSION=$1; shift
+    echo "[-] kc_update $UPGRADE_VERSION"
+    ./sbjk.py $UPGRADE_VERSION
+    if [[ $? != 0 ]]; then
+        echo "[!] SBJK crashed, will not update lastrun."
+    else
+        echo "VERSION=$UPGRADE_VERSION" > "$WORKING_DIR/last_run"
+        kc_postupdate_tasks $UPGRADE_VERSION
+    fi
+
+    rm -rf "$WORKING_DIR/root"
+}
+
+function versioncheck() {
+    if [[ "x$VERSION" == "x" ]]
+        then VERSION=0
+    fi
+
+    echo "[-] Last version is $VERSION. Checking for something new..."
+    for CHECKER in ./simver ./versioncheck.py ./speculate.py; do
+        SERVER_VERSION=$($CHECKER $VERSION)
+        if [[ $SERVER_VERSION != $VERSION ]]; then
+            kc_update $SERVER_VERSION
+            break
+        fi
+    done
+}
+
+versioncheck
