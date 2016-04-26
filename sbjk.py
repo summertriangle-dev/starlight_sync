@@ -16,6 +16,7 @@ from collections import namedtuple, OrderedDict
 
 SESSION = requests.Session()
 
+# yes, it is still .dylib even on linux
 libahff = ctypes.cdll.LoadLibrary(
     os.path.join(os.path.dirname(__file__), "misc_utils", os.getenv("PLATFORM"), "libahff.dylib"))
 libahff.ahff_encode_texdata.argtypes = [
