@@ -16,7 +16,7 @@ function kc_postupdate_tasks() {
 
     ./iconsheet_new.py "$WORKING_DIR/iconcache" "$WORKING_DIR/iconsheetcache" "$WORKING_DIR/root/icons2"
 
-    rsync -e "ssh -oStrictHostKeyChecking=no -i $SSH_PRIVATE_KEY" -arvz rsync "$WORKING_DIR/root/" $SYNCREMOTE
+    rsync -e "ssh -oStrictHostKeyChecking=no -i $SSH_PRIVATE_KEY" -arvz "$WORKING_DIR/root/" $SYNCREMOTE
 }
 
 function kc_update() {
