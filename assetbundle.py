@@ -67,6 +67,7 @@ baseStrings = {
     800:"SInt16",
     814:"int64",
     840:"string",
+    847:"TextAsset",
     874:"Texture2D",
     884:"Transform",
     894:"TypelessData",
