@@ -226,9 +226,9 @@ def main(version):
         " OR ".join("name GLOB ?" for glob in ACTIONS))
     all_wanted_files = sql.execute(query, tuple(ACTIONS.keys()))
 
-    seen_ops = []
-
     for batch in batches(100, all_wanted_files):
+        seen_ops = []
+
         cm = seen_db.execute("SELECT name, hash FROM seen WHERE name IN ({0})".format(
             ",".join("?" for row in batch)
         ), tuple(row["name"] for row in batch))
@@ -249,16 +249,16 @@ def main(version):
                     seen_ops.append(seen_op_t(1, row["name"], row["hash"]))
                 else:
                     seen_ops.append(seen_op_t(0, row["name"], row["hash"]))
+
+        for op in seen_ops:
+            if op.is_insert:
+                q = "INSERT INTO seen VALUES (:name, :hash)"
+            else:
+                q = "UPDATE seen SET hash = :hash WHERE name = :name"
+            seen_db.execute(q, {"name": op.name, "hash": op.hash})
+
+        seen_db.commit()
     sql.close()
-
-    for op in seen_ops:
-        if op.is_insert:
-            q = "INSERT INTO seen VALUES (:name, :hash)"
-        else:
-            q = "UPDATE seen SET hash = :hash WHERE name = :name"
-        seen_db.execute(q, {"name": op.name, "hash": op.hash})
-
-    seen_db.commit()
     seen_db.close()
 
 if __name__ == '__main__':

@@ -78,11 +78,14 @@ void copy_2bpp_rgba4444(byte *raw, int len, byte *output) {
 }
 
 void copy_3bpp_rgb(byte *raw, int len, byte *output) {
-    memset(output, 255, len + (len / 3));
-    for (int i = 0, ctr = 0; i < len; ctr = (i += 3) * 4) {
-        output[ctr] = raw[i];
-        output[ctr + 1] = raw[i + 1];
-        output[ctr + 2] = raw[i + 2];
+    byte *in_pixel_ptr = raw;
+    byte *out_pixel_ptr = output;
+
+    while (in_pixel_ptr < raw + len) {
+        *out_pixel_ptr++ = *in_pixel_ptr++;
+        *out_pixel_ptr++ = *in_pixel_ptr++;
+        *out_pixel_ptr++ = *in_pixel_ptr++;
+        *out_pixel_ptr++ = 255;
     }
 }
 
@@ -95,7 +98,7 @@ void copy_etc1_rgb(byte *raw, int len, byte *output, int width) {
     int offset = 0;
     for (int i = 0; i < len; i += 8) {
         assert(unpack_etc1_block_c(raw + i, dst, 0) == 1);
-        
+
         memcpy(row1 + offset, dst     , 4 * 4);
         memcpy(row2 + offset, dst + 16, 4 * 4);
         memcpy(row3 + offset, dst + 32, 4 * 4);
