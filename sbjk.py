@@ -141,7 +141,7 @@ def do_action_for_file(asset_name, hash, flags):
 
 
 ACTIONS = OrderedDict([("v/*.acb", process_acb),
-                       ("card_bg_*_*.unity3d", noop),
+                       ("card_bg_*_*.unity3d",    noop),
                        ("card_petit_*.unity3d",   extract_image_to("puchi",          r"(?:0+)?([0-9]+)", "{0}.png")),
                        ("card_bg_*.unity3d",      extract_image_to("spread",         r"(?:0+)?([0-9]+)", "{0}.png")),
                        ("card_*_xl.unity3d",      extract_image_to("card",           r"(?:0+)?([0-9]+)", "{0}.png")),
