@@ -145,7 +145,7 @@ ACTIONS = OrderedDict([("v/*.acb", process_acb),
                        ("card_petit_*.unity3d",   extract_image_to("puchi",          r"(?:0+)?([0-9]+)", "{0}.png")),
                        ("card_bg_*.unity3d",      extract_image_to("spread",         r"(?:0+)?([0-9]+)", "{0}.png")),
                        ("card_*_xl.unity3d",      extract_image_to("card",           r"(?:0+)?([0-9]+)", "{0}.png")),
-                       ("card_*_sm.unity3d",      extract_image_to("../iconcache",   r"(?:0+)?([0-9]+)", "{0}.png", b"*_s")),
+                       ("card_*_sm.unity3d",      extract_image_to("../iconcache",   r"(?:0+)?([0-9]+)", "{0}.png", b"*_m")),
                        ("chara_*_base.unity3d",   extract_image_to("chara2",         r"(?:0+)?([0-9]+)", "{0}/{1}.png")),
                        ("chara_*_face_*.unity3d", extract_image_to("chara2",         r"(?:0+)?([0-9]+)", "{0}/{1}_{2}.png"))])
 

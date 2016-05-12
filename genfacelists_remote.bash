@@ -2,6 +2,9 @@
 shopt -s extglob
 shopt -s nullglob
 
+# This file must only use bash builtins.
+# Nothing is available in the remote chroot.
+
 for CHARA_ID in "$1"/*; do
     for POSE in "$CHARA_ID/"+([^_]).png; do
         read ADJUST_ARGLIST < ${POSE%.png}.adjustment

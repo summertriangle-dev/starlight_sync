@@ -33,10 +33,14 @@ def composite_images(images, cache, out):
     args.extend(images)
     subprocess.call(args, stdout=subprocess.DEVNULL)
 
+    args[0] = os.path.join(libexec, "make_icon_sheet2")
+    args[1] = args[1].replace(".png", "@2x.png")
+    subprocess.call(args, stdout=subprocess.DEVNULL)
+
     with open(cache, "w") as manifest:
         json.dump([i for i in images], manifest)
 
-def do(this_sect, composite_args, cache, odir, image_count, css):
+def do(this_sect, composite_args, cache, odir, image_count, css, css2):
     composite_images(composite_args,
         os.path.join(cache, "icons_{0}.png.cache".format(image_count)),
         os.path.join(odir, "icons_{0}.png".format(image_count)))
@@ -45,16 +49,19 @@ def do(this_sect, composite_args, cache, odir, image_count, css):
         px, py = coords_for_position(i)
         css.write(".icon.icon_{0} {{ background-image:url(\"icons_{3}.png?{4}\"); background-position:-{1}px -{2}px; }}\n".format(
             id, px, py, image_count, random))
+        css2.write(".icon.icon_{0} {{ background:url(\"icons_{3}@2x.png?{4}\") -{1}px -{2}px/384px 384px; }}\n".format(
+            id, px, py, image_count, random))
     del this_sect[:]
     del composite_args[:]
     return image_count + 1
 
-def do_if_full(this_sect, composite_args, cache, odir, image_count, css):
+def do_if_full(this_sect, composite_args, cache, odir, image_count, css, css2):
     if len(this_sect) == matrix_h * matrix_w:
-        return do(this_sect, composite_args, cache, odir, image_count, css)
+        return do(this_sect, composite_args, cache, odir, image_count, css, css2)
     return image_count
 
-def gen_icon_sheets(root, cache, odir, css):
+def gen_icon_sheets(root, cache, odir, css, css2):
+    css2.write("@media only screen and (min-resolution: 2dppx) {\n")
     this_sect = []
     composite_args = []
     image_count = 0
@@ -63,13 +70,14 @@ def gen_icon_sheets(root, cache, odir, css):
     for image in filter(lambda y: gex.match(y), os.listdir(root)):
         this_sect.append(gex.match(image).group(1))
         composite_args.append(os.path.join(root, image))
-        image_count = do_if_full(this_sect, composite_args, cache, odir, image_count, css)
+        image_count = do_if_full(this_sect, composite_args, cache, odir, image_count, css, css2)
 
-    do(this_sect, composite_args, cache, odir, image_count, css)
+    do(this_sect, composite_args, cache, odir, image_count, css, css2)
+    css2.write("}")
 
 def main(root, cache, odir):
-    with open(os.path.join(odir, "icons.css"), "w") as css:
-        gen_icon_sheets(root, cache, odir, css)
+    with open(os.path.join(odir, "icons.css"), "w") as css, open(os.path.join(odir, "icons@2x.css"), "w") as css2:
+        gen_icon_sheets(root, cache, odir, css, css2)
 
 if __name__ == "__main__":
     import plac
