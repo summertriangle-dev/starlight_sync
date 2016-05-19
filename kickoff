@@ -10,16 +10,19 @@ fi
 source "$WORKING_DIR/last_run"
 
 function kc_postupdate_tasks() {
+    echo "[-] Notice: updating the iconsheets."
     for d in "$WORKING_DIR/iconcache" "$WORKING_DIR/iconsheetcache" "$WORKING_DIR/root/icons2"; do
         mkdir -p $d
     done
 
     ./iconsheet_new.py "$WORKING_DIR/iconcache" "$WORKING_DIR/iconsheetcache" "$WORKING_DIR/root/icons2"
+    echo "[-] Notice: cropping poses."
     ./faces.bash "$WORKING_DIR/root/chara2"
     cp genfacelists_remote.bash "$WORKING_DIR/root"
 
     rsync -e "ssh -oStrictHostKeyChecking=no -i $SSH_PRIVATE_KEY" -arvz "$WORKING_DIR/root/" $SYNCREMOTE
     read -r -a REMOTE_PARAM <<< $(tr : " " <<< $SYNCREMOTE)
+    echo "[-] Notice: executing genfacelists on remote."
     ssh -oStrictHostKeyChecking=no -i $SSH_PRIVATE_KEY ${REMOTE_PARAM[0]} "${REMOTE_PARAM[1]}/genfacelists_remote.bash ${REMOTE_PARAM[1]}/chara2"
 }
 
@@ -30,10 +33,12 @@ function kc_update() {
     if [[ $? != 0 ]]; then
         echo "[!] SBJK crashed, will not update lastrun."
     else
+        echo "[-] SBJK complete. Writing new version to lastrun, then executing postupdate."
         echo "VERSION=$UPGRADE_VERSION" > "$WORKING_DIR/last_run"
         kc_postupdate_tasks $UPGRADE_VERSION
     fi
 
+    echo "[-] All done. Removing temproot."
     rm -rf "$WORKING_DIR/root"
 }
 
@@ -46,6 +51,7 @@ function versioncheck() {
     for CHECKER in ./simver ./versioncheck.py ./speculate.py; do
         SERVER_VERSION=$($CHECKER $VERSION)
         if [[ $SERVER_VERSION != $VERSION ]]; then
+            echo "[-] $CHECKER reports new version $SERVER_VERSION, continuing."
             kc_update $SERVER_VERSION
             break
         fi
