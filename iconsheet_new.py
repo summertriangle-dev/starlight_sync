@@ -34,7 +34,7 @@ def composite_images(images, cache, out):
     subprocess.call(args, stdout=subprocess.DEVNULL)
 
     args[0] = os.path.join(libexec, "make_icon_sheet2")
-    args[1] = args[1].replace(".png", "@2x.png")
+    args[1] = args[1].replace(".png", "@2x.jpg")
     subprocess.call(args, stdout=subprocess.DEVNULL)
 
     with open(cache, "w") as manifest:
@@ -49,7 +49,7 @@ def do(this_sect, composite_args, cache, odir, image_count, css, css2):
         px, py = coords_for_position(i)
         css.write(".icon.icon_{0} {{ background-image:url(\"icons_{3}.png?{4}\"); background-position:-{1}px -{2}px; }}\n".format(
             id, px, py, image_count, random))
-        css2.write(".icon.icon_{0} {{ background:url(\"icons_{3}@2x.png?{4}\") -{1}px -{2}px/384px 384px; }}\n".format(
+        css2.write(".icon.icon_{0} {{ background:url(\"icons_{3}@2x.jpg?{4}\") -{1}px -{2}px/384px 384px; }}\n".format(
             id, px, py, image_count, random))
     del this_sect[:]
     del composite_args[:]
@@ -60,8 +60,12 @@ def do_if_full(this_sect, composite_args, cache, odir, image_count, css, css2):
         return do(this_sect, composite_args, cache, odir, image_count, css, css2)
     return image_count
 
+HIDPI_CSS_HEADER = """\
+@media only screen and (-webkit-min-device-pixel-ratio: 1.3), 
+    only screen and (-o-min-device-pixel-ratio: 13/10), 
+    only screen and (min-resolution: 120dpi) {"""
 def gen_icon_sheets(root, cache, odir, css, css2):
-    css2.write("@media only screen and (min-resolution: 2dppx) {\n")
+    css2.write(HIDPI_CSS_HEADER + "\n")
     this_sect = []
     composite_args = []
     image_count = 0
