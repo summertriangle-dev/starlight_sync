@@ -151,7 +151,7 @@ ACTIONS_FAST = OrderedDict([
 
 ACTIONS_SLOW = OrderedDict([
     ("chara_*_base.unity3d",        extract_image_to("chara2",         r"(?:0+)?([0-9]+)", "{0}/{1}.png")),
-    ("chara_*_face_*.unity3d",      extract_image_to("chara2",         r"(?:0+)?([0-9]+)", "{0}/{1}_{2}.png"))
+    ("chara_*_face_*.unity3d",      extract_image_to("chara2",         r"(?:0+)?([0-9]+)", "{0}/{1}_{2}.png")),
     ("v/*.acb",                     process_acb),
 ])
 
