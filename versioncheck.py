@@ -75,7 +75,7 @@ class ApiClient(object):
             "USER_ID": self.lolfuscate(str(self.user)),
             "CARRIER": "google",
             "UDID": self.lolfuscate(self.udid),
-            "APP_VER": "2.0.3",
+            "APP_VER": os.getenv("VC_APP_VER", "2.1.1"),
             "RES_VER": str(self.res_ver),
             "IP_ADDRESS": "127.0.0.1",
             "DEVICE_NAME": "Nexus 42",
@@ -112,8 +112,15 @@ def versioncheck():
     msg = client.call("/load/check", args)
     return msg[b"data_headers"][b"required_res_ver"]
 
+def check(__vcache={"t": 0, "v": 0}):
+    if time.time() - __vcache["t"] > 3600:
+        nv = versioncheck()
+        __vcache["t"] = time.time()
+        __vcache["v"] = nv
+    return __vcache["v"]
+
 if __name__ == '__main__':
-    if not all(os.getenv(var) for var in ["VC_ACCOUNT", "VC_SID_SALT", "VC_AES_KEY"]):
+    if not all(os.getenv(var) for var in ["VC_ACCOUNT", "VC_SID_SALT", "VC_AES_KEY", "VC_APP_VER"]):
         print("warning: not checking version", file=sys.stderr)
         print(sys.argv[1])
     else:
