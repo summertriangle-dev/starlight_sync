@@ -147,6 +147,7 @@ ACTIONS_FAST = OrderedDict([
     ("card_bg_*.unity3d",           extract_image_to("spread",         r"(?:0+)?([0-9]+)", "{0}.png")),
     ("card_*_xl.unity3d",           extract_image_to("card",           r"(?:0+)?([0-9]+)", "{0}.png")),
     ("card_*_sm.unity3d",           extract_image_to("../iconcache",   r"(?:0+)?([0-9]+)", "{0}.png", b"*_m")),
+    ("chara_icon_*.unity3d",        extract_image_to("icon_char",      r"(?:0+)?([0-9]+)", "{0}.png")),
 ])
 
 ACTIONS_SLOW = OrderedDict([

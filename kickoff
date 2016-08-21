@@ -11,7 +11,7 @@ source "$WORKING_DIR/last_run"
 
 function kc_sync_now() {
     echo "[-] Notice: syncing now."
-    rsync -e "ssh -oStrictHostKeyChecking=no -i $SSH_PRIVATE_KEY" -arvz "$WORKING_DIR/root/" $SYNCREMOTE
+    rsync -e "ssh -oStrictHostKeyChecking=no -i $SSH_PRIVATE_KEY" -arvzL "$WORKING_DIR/root/" $SYNCREMOTE
 }
 
 function kc_postupdate_tasks_fast() {
@@ -45,6 +45,9 @@ function kc_update() {
 
     CHECKPOINT_PATH="$WORKING_DIR/__manifestloader_cache/A_SyncCache_checkpoint.db"
     cp "$WORKING_DIR/__manifestloader_cache/A_SyncCache.db" $CHECKPOINT_PATH
+
+    mkdir -p "$WORKING_DIR/root/"
+    ln -s "$WORKING_DIR/iconcache" "$WORKING_DIR/root/icon_card"
 
     SBJK_EXEC_MODE="fast" ./sbjk.py $UPGRADE_VERSION
     if [[ $? != 0 ]]; then
