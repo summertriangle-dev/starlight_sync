@@ -35,6 +35,7 @@ enum /* pixel_format_t */ {
     A8 = 1,
     RGB24 = 3,
     RGBA32 = 4,
+    ARGB32 = 5,
     RGB565 = 7,
     RGBA4444 = 13,
     ETC1RGB = 34,
@@ -108,9 +109,22 @@ int ahff_encode_texdata(int fmt,
             copy_2bpp_rgba4444(data, expect_size, out);
             break;
         case RGBA32:
+        case ARGB32: {
             expect_size = point_count * 4;
             memcpy(out, data, expect_size);
+
+            if (fmt == ARGB32) {
+                for (uint8_t *pbase = out; pbase < (out + expect_size); pbase += 4) {
+                    uint8_t tmp = pbase[0];
+                    pbase[0] = pbase[1];
+                    pbase[1] = pbase[2];
+                    pbase[2] = pbase[3];
+                    pbase[3] = tmp;
+                }
+            }
+
             break;
+        }
         case ETC1RGB:
             /* ETC1 encodes 4x4 blocks.
              * So w and h must be multiples of 4. */
